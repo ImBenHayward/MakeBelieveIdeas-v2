@@ -48,8 +48,6 @@ window.Webflow.push(() => {
 
   $(document).ready(function () {
     document.addEventListener('snipcart.ready', () => {
-      const userSignedIn = Snipcart.store.getState().customer.status === 'SignedIn';
-
       // User is on homepage
       if (window.location.pathname === '/') {
         Snipcart.events.on('snipcart.initialized', (snipcartState) => {
@@ -101,7 +99,7 @@ window.Webflow.push(() => {
           pagination.buildPage(undefined, window.stepName);
           doResize = false;
 
-          if (userSignedIn) {
+          if (Snipcart.store.getState().customer.status === 'SignedIn') {
             if (window.innerWidth <= 991) {
               $('.character-selector-container-mobile').show();
               $('.character-selector-container').hide();
