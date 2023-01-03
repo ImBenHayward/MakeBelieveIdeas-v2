@@ -1,5 +1,6 @@
 import * as airtable from '../src/airtable.js';
 import * as character from '../src/character.js';
+import * as loading from '../src/loading.js';
 import * as snipcart from '../src/snipcart.js';
 import { displayAlert } from './alerts.js';
 
@@ -42,7 +43,8 @@ export function setFormStep(stepButtonID) {
 }
 
 //refactor this function to display them in the tabs
-export function appendCharacterDropdownItems() {
+export function appendCharacterDropdownItems(callback) {
+  loading.beginLoadingAnimation();
   let userEmail = snipcart.getUserEmail();
   let characterList = airtable.getUserCharacters(userEmail);
   let characterSelectorList = $('.character-selector-list');
@@ -72,7 +74,6 @@ export function appendCharacterDropdownItems() {
     });
 
     $('.w-dropdown-list div').click(function () {
-      console.log('hi');
       $('.dropdown').triggerHandler('w-close.w-dropdown');
     });
 
@@ -81,11 +82,14 @@ export function appendCharacterDropdownItems() {
       e.preventDefault();
       e.stopPropagation();
 
+      loading.beginLoadingAnimation();
+
       const characterId = $(this).attr('id');
 
       let record = airtable.getRecord(characterId);
       record.then((result) => {
         character.configureCharacter(result['fields']);
+        loading.endLoadingAnimation();
       });
     });
 
@@ -104,9 +108,10 @@ export function appendCharacterDropdownItems() {
       airtable.deleteCharacter(characterId, characterName);
       $(`#${characterId}`).parent().remove();
     });
+    loading.endLoadingAnimation();
+    callback && callback();
   });
 }
-
 // Displays the hair styles for the selected colour
 export function displaySelectedColours() {
   hairColour = $('input[name=hair-colour]:checked', '#character-creation-form').val().toLowerCase();

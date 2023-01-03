@@ -135,7 +135,7 @@ window.Webflow.push(() => {
   });
 
   window.randomiseOrLoadCharacter = function () {
-    //loading.beginLoadingAnimation();
+    loading.beginLoadingAnimation();
     const userSignedIn = Snipcart.store.getState().customer.status === 'SignedIn';
 
     if (!$('input[name="fname"]').val()) {

@@ -16,17 +16,17 @@ export function buildUserCharacter() {
     let characterList = airtable.getUserCharacters(userEmail);
 
     characterList.then((result) => {
-      form.appendCharacterDropdownItems();
-
-      if (result.length > 0) {
-        // Get most recently updated character
-        const latestCharacter = result.reduce((a, b) =>
-          a.fields.MODIFIED_AT > b.fields.MODIFIED_AT ? a : b
-        );
-        configureCharacter(latestCharacter['fields']);
-      } else {
-        randomiseCharacter();
-      }
+      form.appendCharacterDropdownItems(function () {
+        if (result.length > 0) {
+          // Get most recently updated character
+          const latestCharacter = result.reduce((a, b) =>
+            a.fields.MODIFIED_AT > b.fields.MODIFIED_AT ? a : b
+          );
+          configureCharacter(latestCharacter['fields']);
+        } else {
+          randomiseCharacter();
+        }
+      });
     });
   } else {
     record = airtable.getRecord();
@@ -65,6 +65,7 @@ export function configureCharacter(fields) {
   configureInputs();
 }
 
+// this is the final point (debugging purposes)
 function configureInputs() {
   window.getSelectedStyles();
   form.displaySelectedColours();
@@ -78,6 +79,7 @@ function configureInputs() {
 
 // Save an existing character to a user profile
 export function saveCharacter() {
+  //loading.beginLoadingAnimation();
   // validate inputs
   let heroNameInput = $('#hero-name-input').val();
   let validInput = validation.validInput(heroNameInput, 2, 50);
